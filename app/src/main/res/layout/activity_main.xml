@@ -9,7 +9,7 @@
     <fragment
         android:id="@+id/mapView"
         android:layout_width="match_parent"
-        android:layout_height="300dp"
+        android:layout_height="350dp"
         android:layout_alignParentBottom="true"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_centerHorizontal="true"
@@ -55,11 +55,24 @@
         android:textSize="20sp" />
 
     <TextView
+        android:id="@+id/altitudeText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/countryText"
+        android:layout_below="@+id/longitudeText"
+        android:layout_marginTop="17dp"
+        android:textColor="@color/work"
+        android:paddingStart="50sp"
+        android:paddingEnd="50sp"
+        android:text=""
+        android:textSize="20sp" />
+
+    <TextView
         android:id="@+id/countryText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignEnd="@+id/longitudeText"
-        android:layout_below="@+id/longitudeText"
+        android:layout_below="@+id/altitudeText"
         android:layout_marginTop="17dp"
         android:textColor="@color/work"
         android:paddingStart="50sp"
@@ -79,4 +92,5 @@
         android:paddingEnd="50sp"
         android:text=""
         android:textSize="20sp" />
+
 </RelativeLayout>

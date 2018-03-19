@@ -14,7 +14,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -31,6 +30,7 @@ import java.util.Locale;
 public class MainActivity extends FragmentActivity implements OnMapReadyCallback {
     TextView latitudeText;
     TextView longitudeText;
+    TextView altitudeText;
     TextView countryText;
     TextView adressText;
 
@@ -49,6 +49,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         longitudeText = findViewById(R.id.longitudeText);
         countryText = findViewById(R.id.countryText);
         adressText = findViewById(R.id.adressText);
+        altitudeText = findViewById(R.id.altitudeText);
     }
 
     @Override
@@ -58,6 +59,25 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5, 10, locationListener);
             }
+        }
+    }
+
+    public void verifyPermision(){
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+        }
+        else{
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5, 10, locationListener);
+            Location lastLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            map.clear();
+            LatLng location = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
+
+            map.addMarker(new MarkerOptions()
+                    .position(location)
+                    .title("My Location")
+                    .icon(BitmapDescriptorFactory
+                            .defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 15));
         }
     }
 
@@ -82,9 +102,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 try{
                     List<Address> addressList = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
                     if(addressList != null && addressList.size()>0){
-                        Toast.makeText(MainActivity.this, addressList.get(0).getCountryName(),Toast.LENGTH_LONG).show();
-                        latitudeText.setText("Latitude: "+(int) addressList.get(0).getLatitude());
-                        longitudeText.setText("Longitude "+(int) addressList.get(0).getLongitude());
+                        latitudeText.setText("Latitude: "+location.getLatitude());
+                        longitudeText.setText("Longitude: "+location.getLongitude());
+                        altitudeText.setText("Altitude: "+location.getAltitude());
                         countryText.setText("Country: "+addressList.get(0).getCountryName());
                         adressText.setText("Address: "+addressList.get(0).getAddressLine(0));
                     }
@@ -103,22 +123,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             public void onProviderDisabled(String s) {}
         };
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-        }
-        else{
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-            Location lastLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            map.clear();
-            LatLng location = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
-
-            map.addMarker(new MarkerOptions()
-                    .position(location)
-                    .title("My Location")
-                    .icon(BitmapDescriptorFactory
-                            .defaultMarker(BitmapDescriptorFactory.HUE_RED)));
-            map.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 15));
-        }
-
+        verifyPermision();
     }
 }
